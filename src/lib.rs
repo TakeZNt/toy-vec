@@ -106,6 +106,15 @@ impl<'vec, T> Iterator for Iter<'vec, T> {
     }
 }
 
+impl<'vec, T: Default> IntoIterator for &'vec ToyVec<T> {
+    type Item = &'vec T;
+    type IntoIter = Iter<'vec, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::ToyVec;
@@ -159,5 +168,30 @@ mod tests {
         assert_eq!(Some(&200), toyvec.get(1));
         assert_eq!(Some(&300), toyvec.get(2));
         assert_eq!(None, toyvec.get(3));
+    }
+
+    #[test]
+    fn iterator() {
+        let mut toyvec = ToyVec::<usize>::with_capacity(2);
+        toyvec.push(100);
+        toyvec.push(200);
+
+        let mut iter = toyvec.iter();
+        assert_eq!(Some(&100), iter.next());
+        assert_eq!(Some(&200), iter.next());
+        assert_eq!(None, iter.next());
+    }
+
+    #[test]
+    fn into_iterator() {
+        let mut toyvec = ToyVec::<usize>::with_capacity(2);
+        toyvec.push(100);
+        toyvec.push(200);
+
+        let mut i = 1;
+        for element in &toyvec {
+            assert_eq!(&(i * 100), element);
+            i += 1;
+        }
     }
 }
