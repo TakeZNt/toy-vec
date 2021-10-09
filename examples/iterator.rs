@@ -10,7 +10,7 @@ fn main() {
     // これはコンパイルエラーとなる
     // v.push("おお");
 
-    assert_eq!(iter.next(), Some(&"最初の要素"));
+    assert_eq!(Some(&"最初の要素"), iter.next());
 
     // これはコンパイルが通る
     v.push("おお");
