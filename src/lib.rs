@@ -53,6 +53,15 @@ impl<T: Default> ToyVec<T> {
         self.length += 1;
     }
 
+    /// イテレータを返す
+    pub fn iter(&self) -> Iter<T> {
+        Iter {
+            elements: &self.elements,
+            len: self.length,
+            pos: 0,
+        }
+    }
+
     fn allocate_in_heap(size: usize) -> Box<[T]> {
         std::iter::repeat_with(Default::default)
             .take(size)
@@ -70,6 +79,29 @@ impl<T: Default> ToyVec<T> {
         let old_elements = std::mem::replace(&mut self.elements, new_elements); // 配列を置き換える場合に使う
         for (i, element) in old_elements.into_vec().into_iter().enumerate() {
             self.elements[i] = element;
+        }
+    }
+}
+
+/*
+ * 簡易Vectorクラスのイテレータ
+ */
+pub struct Iter<'vec, T> {
+    elements: &'vec Box<[T]>,
+    len: usize,
+    pos: usize,
+}
+
+impl<'vec, T> Iterator for Iter<'vec, T> {
+    type Item = &'vec T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.pos == self.len {
+            None
+        } else {
+            let res = Some(&self.elements[self.pos]);
+            self.pos += 1;
+            res
         }
     }
 }
